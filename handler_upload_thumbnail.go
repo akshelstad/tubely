@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -31,8 +30,6 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	fmt.Println("uploading thumbnail for video", videoID, "by user", userID)
-
 	// maxMemory represents 10MB of memory by bitshifting the number 10 20 times.
 	const maxMemory = 10 << 20
 	r.ParseMultipartForm(maxMemory)
@@ -57,7 +54,7 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Get the asset path string and the actual asset path on disk.
-	assetPath := getAssetPath(videoID, mediaType)
+	assetPath := getAssetPath(mediaType)
 	assetDiskPath := cfg.getAssetDiskPath(assetPath)
 
 	// Create new file on disk.
@@ -66,6 +63,7 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, http.StatusInternalServerError, "unable to create file on server", err)
 	}
 	defer newFile.Close()
+
 	// Copy contents from multipart file to new file.
 	if _, err = io.Copy(newFile, file); err != nil { // Respond with a 500 code if the file can not be copied to new file on disk.
 		respondWithError(w, http.StatusInternalServerError, "unable to copy file data to new file", err)
@@ -95,6 +93,7 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, http.StatusInternalServerError, "unable to update video metadata in database", err)
 		return
 	}
+
 	// Respond with a 200 code and the metaData struct indicating success.
 	respondWithJSON(w, http.StatusOK, video)
 }
