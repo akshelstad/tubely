@@ -30,9 +30,9 @@ func getAssetPath(mediaType string) string {
 	return fmt.Sprintf("%s%s", id, ext)
 }
 
-// getObjectURL generates an AWS s3 URL from an object key.
+// getObjectURL generates an AWS S3 URL from an object key.
 func (cfg apiConfig) getObjectURL(key string) string {
-	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cfg.s3Bucket, cfg.s3Region, key)
+	return fmt.Sprintf("https://%s/%s", cfg.s3CfDistribution, key)
 }
 
 // getAssetDiskPath generates the path on disk for an asset. It uses the asset path root defined in the configuration.

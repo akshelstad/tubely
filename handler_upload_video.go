@@ -93,13 +93,6 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// // Get the absolute path of the temporary file.
-	// tmpPath, err := filepath.Abs(tmpFile.Name())
-	// if err != nil { // Respond with a 500 code if the file path for the temp video file can not be retrieved.
-	// 	respondWithError(w, http.StatusInternalServerError, "unable to retrieve absolute file path of temp file", err)
-	// 	return
-	// }
-
 	// Get the aspect ratio of the video.
 	aspectRatio, err := getVideoAspectRatio(tmpFile.Name())
 	if err != nil { // Respond with a 500 code if the aspect ratio for the video file can not be retrieved.
@@ -152,7 +145,9 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 
 	// Generate AWS video URL & update video metadata in database.
 	videoURL := cfg.getObjectURL(videoKey)
+	// videoURL := fmt.Sprintf("%s,%s", cfg.s3Bucket, videoKey)
 	video.VideoURL = &videoURL
+
 	err = cfg.db.UpdateVideo(video)
 	if err != nil { // Respond with a 500 code if the video metadata can not be updated.
 		respondWithError(w, http.StatusInternalServerError, "unable to update video metadata in database", err)
